@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def load_dataframe(path, transform=False):
+def load_dataframe(path: str, transform: bool = False):
     """
     Load the dataframe from the file
     Args:
