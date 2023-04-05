@@ -4,30 +4,35 @@ from helper_functions import load_dataframe
 from plotting_functions import plot_correlation, plot_scatter
 from config import data_path, indicator_metadata_path, country_metadata_path
 
+
 # Loading metadata related to indicators
 indicators_metadata = load_dataframe(indicator_metadata_path)
 indicators_metadata = indicators_metadata.drop(columns=["Unnamed: 4"])
 print("============ Indicators List =============")
 print(indicators_metadata.INDICATOR_NAME.head(5))
 
+
 # Loading metadata related to indicators
 country_metadata = load_dataframe(country_metadata_path)
 country_metadata = country_metadata.drop(columns=["Unnamed: 5"]).dropna()
 
-# Printing the countries based on income group filter
-distinct_regions = country_metadata.IncomeGroup.unique()
-print(f"Distinct income groups: {distinct_regions}")
 
-for region in distinct_regions:
-    print(f"============{region}====================")
+# Printing the countries based on income group filter
+distict_income_groups = country_metadata.IncomeGroup.unique()
+print(f"Distinct income groups: {distict_income_groups}")
+
+for income_group in distict_income_groups:
+    print(f"============{income_group}====================")
     print(
-        country_metadata[country_metadata["IncomeGroup"] == region][
+        country_metadata[country_metadata["IncomeGroup"] == income_group][
             ["TableName", "Region"]
         ].head()
     )
 
+
 # Loading main data with transformation
 year_df, country_df = load_dataframe(data_path, transform=True)
+
 
 # Picking few countries based on different income ranges
 selected_countries = ["Australia", "Thailand", "India", "Yemen, Rep."]
@@ -43,6 +48,7 @@ indicators_of_interest = [
         ["INDICATOR_NAME"].values
         )[0]
         for x in indicators_codes]
+
 
 # Exploring statistical properties for indicators
 for indicator in indicators_of_interest:
@@ -68,10 +74,10 @@ for indicator in indicators_of_interest:
 print("======================== SKEW ======================", skew_df)
 print("======================== Kurtosis ======================", kurtosis_df)
 
-# Exploring correlations between indicators
+
+# Exploring correlations between indicators with time factor
 countries = ["Japan", "Sudan"]
 indicators = indicators_of_interest[:2]
-print(indicators)
 plot_correlation(
     year_df,
     countries,
@@ -83,6 +89,35 @@ plot_correlation(
     ],
 )
 
+countries = ["Malta", "Yemen, Rep."]
+indicators = ["Population growth (annual %)", "Arable land (% of land area)"]
+plot_correlation(
+    year_df,
+    countries,
+    indicators,
+    [
+        "population vs arable land",
+        "population growth",
+        "arable land %"
+    ],
+)
+
+# Obtaining correlation between indicators as overall samples
+countries = ["Korea, Dem. People's Rep.", "Indonesia", "China", "Korea, Rep."]
+indicators = [
+    "Urban population (% of total population)",
+    "Electric power consumption (kWh per capita)",
+]
+plot_scatter(
+    year_df,
+    indicators,
+    countries,
+    [
+        "urban population vs power consumption",
+        "urban population",
+        "electric power consumption",
+    ],
+)
 
 countries = ["China", "Bangladesh"]
 indicators = [
@@ -100,32 +135,3 @@ plot_scatter(
     ],
 )
 
-
-countries = ["Malta", "Yemen, Rep."]
-indicators = ["Population growth (annual %)", "Arable land (% of land area)"]
-plot_correlation(
-    year_df,
-    countries,
-    indicators,
-    [
-        "population vs arable land",
-        "population growth",
-        "arable land %"
-    ],
-)
-
-countries = ["Korea, Dem. People's Rep.", "Indonesia", "China", "Korea, Rep."]
-indicators = [
-    "Urban population (% of total population)",
-    "Electric power consumption (kWh per capita)",
-]
-plot_scatter(
-    year_df,
-    indicators,
-    countries,
-    [
-        "urban population vs power consumption",
-        "urban population",
-        "electric power consumption",
-    ],
-)
