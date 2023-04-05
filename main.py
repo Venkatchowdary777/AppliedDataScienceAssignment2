@@ -1,7 +1,7 @@
 import pandas as pd
 from stats import skew, kurtosis
 from helper_functions import load_dataframe
-from plotting_functions import plot_correlation
+from plotting_functions import plot_correlation, plot_scatter
 from config import data_path, indicator_metadata_path, country_metadata_path
 
 # from plotting functions import pie_chart, line_chart, bar_chart
@@ -45,17 +45,11 @@ for indicator in indicators_of_interest:
     print(country_df[selected_countries + ["World"]].loc[indicator].describe())
 
 # Creating dataframes wrt skew and kurtosis for paired indicators
-skew_df = pd.DataFrame(
-    columns=indicators_of_interest, index=selected_countries
-)
-kurtosis_df = pd.DataFrame(
-    columns=indicators_of_interest, index=selected_countries
-)
+skew_df = pd.DataFrame(columns=indicators_of_interest, index=selected_countries)
+kurtosis_df = pd.DataFrame(columns=indicators_of_interest, index=selected_countries)
 for indicator in indicators_of_interest:
     for country in selected_countries + ["World"]:
-        skew_df[indicator][country] = skew(
-            country_df[country].loc[indicator].values
-        )
+        skew_df[indicator][country] = skew(country_df[country].loc[indicator].values)
         kurtosis_df[indicator][country] = kurtosis(
             country_df[country].loc[indicator].values
         )
@@ -64,16 +58,64 @@ print("SKEW", skew_df)
 print("Kurtosis", kurtosis_df)
 
 # Exploring correlations between indicators
-countries = ["Japan", "Sudan"] 
+countries = ["Japan", "Sudan"]
 indicators = [
     "Urban population (% of total population)",
     "Population in urban agglomerations of more than 1 million (% of total population)",
 ]
-plot_correlation(year_df, countries, indicators)
+plot_correlation(
+    year_df,
+    countries,
+    indicators,
+    [
+        "urban population vs agglomerations",
+        "urban population",
+        "urban agglomerations"
+    ],
+)
+
+
+# Exploring correlations between indicators
+countries = ["China", "Bangladesh"]
+indicators = ["Urban population (% of total population)", "CO2 emissions (kt)"]
+plot_scatter(
+    year_df,
+    indicators,
+    countries,
+    [
+        "population vs CO2",
+        "population growth",
+        "CO2 emissions"
+    ],
+)
+
 
 # Exploring correlations between indicators
 countries = ["Malta", "Yemen, Rep."]
-indicators = ["Population growth (annual %)", "CO2 emissions (kt)"]
-plot_correlation(year_df, countries, indicators)
+indicators = ["Population growth (annual %)", "Arable land (% of land area)"]
+plot_correlation(
+    year_df,
+    countries,
+    indicators,
+    [
+        "population vs arable land",
+        "population growth",
+        "arable land %"
+    ],
+)
 
-
+countries = ["Korea, Dem. People's Rep.", "Indonesia", "China", "Korea, Rep."]
+indicators = [
+    "Urban population (% of total population)",
+    "Electric power consumption (kWh per capita)",
+]
+plot_scatter(
+    year_df,
+    indicators,
+    countries,
+    [
+        "urban population vs power consumption",
+        "urban population",
+        "electric power consumption",
+    ],
+)
