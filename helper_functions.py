@@ -2,6 +2,12 @@ import pandas as pd
 
 
 def load_dataframe(path, transform=False):
+    """
+    Load the dataframe from the file
+    Args:
+        path (str): path of the file
+        transform (bool): if true then year and country transformations apply, else just returns loaded dataframe
+    """
     df = pd.read_csv(path)
     if not transform:
         return df
